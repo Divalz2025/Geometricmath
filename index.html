@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Dash - Geometry Dash Math Game</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron y Audiowide para estética retro/arcade neón -->
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        audiowide: ['Audiowide', 'cursive'],
+                    },
+                    colors: {
+                        gdDark: '#0a0c14',
+                        gdCard: '#121624',
+                        gdNeonGreen: '#00ff66',
+                        gdNeonCyan: '#00f0ff',
+                        gdNeonPink: '#ff007f',
+                        gdNeonYellow: '#ffee00',
+                        gdNeonPurple: '#a855f7'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: #080a10;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(0, 240, 255, 0.12) 0%, transparent 60%),
+                linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .neon-border-green {
+            border: 3px solid #00ff66;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 10px rgba(0, 255, 102, 0.2);
+        }
+        .neon-border-cyan {
+            border: 3px solid #00f0ff;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2);
+        }
+        .neon-border-pink {
+            border: 3px solid #ff007f;
+            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5), inset 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+        .neon-border-yellow {
+            border: 3px solid #ffee00;
+            box-shadow: 0 0 15px rgba(255, 238, 0, 0.5), inset 0 0 10px rgba(255, 238, 0, 0.2);
+        }
+
+        .text-glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.8), 0 0 20px rgba(0, 255, 102, 0.4); }
+        .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4); }
+        .text-glow-pink { text-shadow: 0 0 10px rgba(255, 0, 127, 0.8), 0 0 20px rgba(255, 0, 127, 0.4); }
+        .text-glow-yellow { text-shadow: 0 0 10px rgba(255, 238, 0, 0.8), 0 0 20px rgba(255, 238, 0, 0.4); }
+
+        .gd-button {
+            transition: all 0.1s ease;
+            position: relative;
+            user-select: none;
+        }
+        .gd-button:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.2);
+        }
+        .gd-button:active {
+            transform: translateY(2px) scale(0.97);
+        }
+
+        .shake-screen {
+            animation: shakeScreen 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes shakeScreen {
+            10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-1deg); }
+            20%, 80% { transform: translate3d(4px, 0, 0) rotate(1.5deg); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0) rotate(-2deg); }
+            40%, 60% { transform: translate3d(6px, 0, 0) rotate(2deg); }
+        }
+
+        .pulse-pop {
+            animation: pulsePop 0.35s ease-out;
+        }
+        @keyframes pulsePop {
+            0% { transform: scale(0.85); opacity: 0.5; }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none;
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen justify-between p-3 md:p-6 select-none">
+
+    <!-- Top Header Arcade -->
+    <header class="max-w-4xl mx-auto w-full flex justify-between items-center bg-gdCard/90 rounded-2xl p-4 border-2 border-slate-700 shadow-2xl backdrop-blur mb-4">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-cyan-400 to-blue-600 border-2 border-white rounded-lg flex items-center justify-center shadow-[0_0_12px_#00f0ff] transform -rotate-3">
+                <div class="w-5 h-5 border-2 border-white/80 bg-black/30 rounded-sm flex items-center justify-center">
+                    <div class="w-1.5 h-1.5 bg-yellow-300 rounded-full"></div>
+                </div>
+            </div>
+            <div>
+                <h1 class="font-audiowide text-2xl md:text-3xl text-white tracking-wider text-glow-cyan">MATH DASH</h1>
+                <p class="text-[10px] md:text-xs text-cyan-400 font-bold uppercase tracking-widest">Geometry Math Edition</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Widget de Cronómetro Global -->
+            <div class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-xs md:text-sm font-bold text-cyan-300 flex items-center gap-2 shadow-inner">
+                <i class="fa-solid fa-stopwatch text-cyan-400"></i>
+                <span id="globalTimerDisplay">00:00.0</span>
+            </div>
+
+            <button id="soundBtn" onclick="toggleSound()" class="gd-button bg-slate-800 hover:bg-slate-700 text-cyan-400 px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold border border-cyan-500/40 flex items-center gap-2">
+                <i id="soundIcon" class="fa-solid fa-volume-high text-cyan-400"></i>
+                <span id="soundText" class="hidden md:inline">AUDIO: OFF</span>
+            </button>
+            <button onclick="confirmReset()" class="gd-button bg-rose-950/80 hover:bg-rose-900 text-rose-400 px-3.5 py-2 rounded-xl text-xs md:text-sm font-bold border border-rose-600/50 flex items-center gap-2">
+                <i class="fa-solid fa-arrow-rotate-left"></i>
+                <span class="hidden md:inline">REINICIAR</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main id="mainContainer" class="max-w-4xl mx-auto w-full flex-1 flex flex-col justify-center items-center">
+        
+        <!-- Indicador de Etapas / Bar Badges GD Style -->
+        <div class="w-full grid grid-cols-4 gap-2 md:gap-4 mb-4">
+            
+            <div id="badge-0" class="bg-gdCard rounded-xl p-2 md:p-3 text-center border-2 border-emerald-500/50 shadow-[0_0_10px_rgba(0,255,102,0.2)] transition-all">
+                <div class="w-8 h-8 mx-auto bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-400 flex items-center justify-center text-sm font-bold mb-1">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-emerald-400 uppercase">SUMA</div>
+                <div id="badgeStatus-0" class="text-[9px] md:text-[11px] text-slate-400 font-bold">0 / 20</div>
+            </div>
+
+            <div id="badge-1" class="bg-gdCard/50 opacity-50 rounded-xl p-2 md:p-3 text-center border-2 border-slate-700 transition-all">
+                <div class="w-8 h-8 mx-auto bg-cyan-500/20 text-cyan-400 rounded-lg border border-cyan-400 flex items-center justify-center text-sm font-bold mb-1">
+                    <i class="fa-solid fa-minus"></i>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-cyan-400 uppercase">RESTA</div>
+                <div id="badgeStatus-1" class="text-[9px] md:text-[11px] text-slate-500 font-bold">BLOQUEADO</div>
+            </div>
+
+            <div id="badge-2" class="bg-gdCard/50 opacity-50 rounded-xl p-2 md:p-3 text-center border-2 border-slate-700 transition-all">
+                <div class="w-8 h-8 mx-auto bg-pink-500/20 text-pink-400 rounded-lg border border-pink-400 flex items-center justify-center text-sm font-bold mb-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-pink-400 uppercase">MULTI</div>
+                <div id="badgeStatus-2" class="text-[9px] md:text-[11px] text-slate-500 font-bold">BLOQUEADO</div>
+            </div>
+
+            <div id="badge-3" class="bg-gdCard/50 opacity-50 rounded-xl p-2 md:p-3 text-center border-2 border-slate-700 transition-all">
+                <div class="w-8 h-8 mx-auto bg-yellow-500/20 text-yellow-400 rounded-lg border border-yellow-400 flex items-center justify-center text-sm font-bold mb-1">
+                    <i class="fa-solid fa-divide"></i>
+                </div>
+                <div class="text-[10px] md:text-xs font-bold text-yellow-400 uppercase">DIVISIÓN</div>
+                <div id="badgeStatus-3" class="text-[9px] md:text-[11px] text-slate-500 font-bold">BLOQUEADO</div>
+            </div>
+        </div>
+
+        <!-- Tarjeta Central Principal Arcade Neon -->
+        <div id="gameCard" class="w-full bg-gdCard/95 rounded-3xl p-5 md:p-8 neon-border-green relative shadow-2xl transition-all duration-300">
+            
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <div id="stageHeader" class="font-audiowide text-sm md:text-lg text-emerald-400 flex items-center gap-2 text-glow-green">
+                        <i class="fa-solid fa-play text-xs"></i> ETAPA 1: SUMAS (1 CIFRA)
+                    </div>
+                    <div id="progressText" class="font-bold text-xs md:text-sm bg-slate-900 border border-slate-700 px-3 py-1 rounded-full text-slate-300">
+                        0 / 20 (0%)
+                    </div>
+                </div>
+                <div class="w-full bg-slate-950 h-5 rounded-full p-1 border-2 border-slate-700 overflow-hidden relative shadow-inner">
+                    <div id="progressBar" class="h-full bg-gradient-to-r from-emerald-500 to-green-300 rounded-full transition-all duration-300 shadow-[0_0_12px_#00ff66]" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div class="bg-slate-950/80 border-2 border-slate-800 rounded-2xl p-3 sm:p-6 md:p-8 mb-6 text-center relative shadow-inner overflow-visible">
+                
+                <div id="feedbackIcon" class="hidden absolute top-2 right-3 text-3xl md:text-4xl"></div>
+
+                <div class="flex flex-nowrap items-center justify-center gap-1 sm:gap-3 md:gap-6 text-2xl sm:text-5xl md:text-7xl font-bold font-audiowide py-2 w-full max-w-full">
+                    <span id="num1" class="bg-slate-900 border-2 border-slate-700 text-white min-w-[36px] sm:min-w-[60px] md:min-w-[70px] px-1.5 py-1 sm:px-3 sm:py-2 rounded-lg sm:rounded-2xl shadow-lg text-center flex-shrink-0">0</span>
+                    <span id="operator" class="text-emerald-400 text-glow-green transform scale-100 sm:scale-110 px-0.5 flex-shrink-0">+</span>
+                    <span id="num2" class="bg-slate-900 border-2 border-slate-700 text-white min-w-[36px] sm:min-w-[60px] md:min-w-[70px] px-1.5 py-1 sm:px-3 sm:py-2 rounded-lg sm:rounded-2xl shadow-lg text-center flex-shrink-0">0</span>
+                    <span class="text-slate-600 px-0.5 flex-shrink-0">=</span>
+                    <input type="number" id="answerInput" placeholder="?" 
+                        class="w-16 sm:w-24 md:w-36 h-12 sm:h-16 md:h-24 text-center text-2xl sm:text-5xl md:text-7xl font-bold font-audiowide text-white bg-slate-900 border-2 sm:border-4 border-emerald-500 focus:border-emerald-300 focus:outline-none rounded-lg sm:rounded-2xl shadow-[0_0_20px_rgba(0,255,102,0.3)] transition flex-shrink-0"
+                        autocomplete="off" inputmode="numeric" onkeydown="if(event.key==='Enter') checkAnswer()">
+                </div>
+
+                <div id="hintMessage" class="min-h-[24px] mt-3 sm:mt-4 text-[11px] sm:text-xs md:text-sm font-semibold tracking-wider text-slate-400">
+                    ESCRIBE TU RESPUESTA Y PRESIONA ENTER (EL CRONÓMETRO INICIARÁ)
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-center">
+                <button id="submitBtn" onclick="checkAnswer()" class="gd-button w-full md:w-2/3 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-audiowide text-xl md:text-2xl rounded-2xl font-bold shadow-[0_0_20px_rgba(0,255,102,0.5)] flex items-center justify-center gap-3 border-2 border-white">
+                    <span>COMPROBAR</span>
+                    <i class="fa-solid fa-bolt"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-5 gap-2 mt-5 max-w-sm mx-auto">
+                <button onclick="pressNumpad(1)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">1</button>
+                <button onclick="pressNumpad(2)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">2</button>
+                <button onclick="pressNumpad(3)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">3</button>
+                <button onclick="pressNumpad(4)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">4</button>
+                <button onclick="pressNumpad(5)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">5</button>
+                <button onclick="pressNumpad(6)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">6</button>
+                <button onclick="pressNumpad(7)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">7</button>
+                <button onclick="pressNumpad(8)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">8</button>
+                <button onclick="pressNumpad(9)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">9</button>
+                <button onclick="pressNumpad(0)" class="gd-button bg-slate-900 hover:bg-slate-800 text-white text-xl font-bold py-3 rounded-xl border border-slate-700 shadow-md">0</button>
+                <button onclick="clearNumpad()" class="col-span-5 gd-button bg-rose-950/80 hover:bg-rose-900 text-rose-400 font-bold py-2 rounded-xl border border-rose-800/80 flex items-center justify-center gap-2 text-xs tracking-wider">
+                    <i class="fa-solid fa-delete-left"></i> BORRAR
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Arcade -->
+    <footer class="text-center text-slate-500 text-xs mt-4 tracking-widest font-semibold">
+        GEOMETRY MATH • 20 OPERACIONES POR ETAPA • NIVEL 1 CIFRA
+    </footer>
+
+    <!-- MODAL 1: Stage Cleared GD Style -->
+    <div id="stageModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div id="stageModalCard" class="bg-gdCard rounded-3xl p-8 max-w-md w-full text-center shadow-2xl neon-border-cyan pulse-pop">
+            <div class="w-20 h-20 bg-cyan-500/20 text-cyan-400 rounded-2xl border-2 border-cyan-400 flex items-center justify-center text-4xl mx-auto mb-4 shadow-[0_0_20px_#00f0ff]">
+                <i class="fa-solid fa-flag-checkered"></i>
+            </div>
+            <h2 class="font-audiowide text-3xl text-white mb-2 text-glow-cyan">STAGE CLEARED!</h2>
+            <p id="stageModalDetail" class="text-slate-300 mb-6 text-sm">Has completado la etapa exitosamente.</p>
+            <button onclick="nextStage()" class="gd-button w-full py-4 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-audiowide text-lg rounded-xl shadow-[0_0_20px_#00f0ff] font-bold border-2 border-white">
+                SIGUIENTE ETAPA <i class="fa-solid fa-forward"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Level Complete Final & Scoreboard GD -->
+    <div id="victoryModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gdCard rounded-3xl p-6 md:p-8 max-w-xl w-full text-center shadow-2xl neon-border-yellow pulse-pop max-h-[90vh] overflow-y-auto">
+            <div class="w-16 h-16 bg-yellow-500/20 text-yellow-400 rounded-2xl border-2 border-yellow-300 flex items-center justify-center text-3xl mx-auto mb-3 shadow-[0_0_20px_#ffee00]">
+                <i class="fa-solid fa-crown"></i>
+            </div>
+            <h2 class="font-audiowide text-2xl md:text-3xl text-yellow-300 mb-1 text-glow-yellow">¡VICTORIA TOTAL!</h2>
+            <p class="text-slate-300 mb-4 text-xs md:text-sm">
+                Tiempo Total Acumulado: <strong id="finalTimeResult" class="text-emerald-400 text-lg">00:00.0</strong>
+            </p>
+
+            <!-- Formulario Guardar Nombre -->
+            <div id="saveScoreSection" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-5">
+                <label class="block text-xs font-bold text-cyan-400 mb-2 uppercase tracking-wider">¡Guarda tu tiempo en la Tabla de Líderes!</label>
+                <div class="flex gap-2">
+                    <input type="text" id="playerNameInput" placeholder="Tu Nombre / Tag" maxlength="15"
+                        class="flex-1 bg-slate-900 border border-slate-700 text-white px-4 py-2 rounded-xl font-audiowide focus:border-cyan-400 focus:outline-none uppercase text-sm">
+                    <button onclick="savePlayerScore()" class="gd-button bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-audiowide px-4 py-2 rounded-xl text-xs font-bold">
+                        GUARDAR
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabla de Puntajes (Top 10) -->
+            <div class="mb-5">
+                <h3 class="font-audiowide text-sm text-yellow-400 mb-2 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-trophy"></i> TOP 10 JUGADORES MÁS RÁPIDOS
+                </h3>
+                <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden text-xs">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900 text-slate-400 border-b border-slate-800 font-audiowide text-[10px]">
+                                <th class="p-2 text-center w-12">#</th>
+                                <th class="p-2">JUGADOR</th>
+                                <th class="p-2 text-right">TIEMPO</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardTableBody">
+                            <!-- Se llena dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <button onclick="resetGame()" class="gd-button w-full py-3 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-audiowide text-base rounded-xl shadow-[0_0_20px_#ffee00] font-bold border-2 border-white">
+                JUGAR DE NUEVO <i class="fa-solid fa-rotate-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- LOGICA DEL JUEGO -->
+    <script>
+        const TARGET_CORRECT_ANSWERS = 20;
+        
+        const STAGES = [
+            { id: 0, name: 'Suma', symbol: '+', icon: 'fa-plus', color: '#00ff66', borderClass: 'neon-border-green', textGlowClass: 'text-glow-green', bgBtnClass: 'bg-emerald-500 hover:bg-emerald-400 shadow-[0_0_20px_rgba(0,255,102,0.5)]', inputBorder: 'border-emerald-500 focus:border-emerald-300 shadow-[0_0_20px_rgba(0,255,102,0.3)]', textColor: 'text-emerald-400', progressGrad: 'from-emerald-500 to-green-300 shadow-[0_0_12px_#00ff66]' },
+            { id: 1, name: 'Resta', symbol: '-', icon: 'fa-minus', color: '#00f0ff', borderClass: 'neon-border-cyan', textGlowClass: 'text-glow-cyan', bgBtnClass: 'bg-cyan-400 hover:bg-cyan-300 text-slate-950 shadow-[0_0_20px_rgba(0,240,255,0.5)]', inputBorder: 'border-cyan-400 focus:border-cyan-200 shadow-[0_0_20px_rgba(0,240,255,0.3)]', textColor: 'text-cyan-400', progressGrad: 'from-cyan-500 to-blue-400 shadow-[0_0_12px_#00f0ff]' },
+            { id: 2, name: 'Multiplicación', symbol: '×', icon: 'fa-xmark', color: '#ff007f', borderClass: 'neon-border-pink', textGlowClass: 'text-glow-pink', bgBtnClass: 'bg-pink-500 hover:bg-pink-400 text-white shadow-[0_0_20px_rgba(255,0,127,0.5)]', inputBorder: 'border-pink-500 focus:border-pink-300 shadow-[0_0_20px_rgba(255,0,127,0.3)]', textColor: 'text-pink-400', progressGrad: 'from-pink-500 to-rose-400 shadow-[0_0_12px_#ff007f]' },
+            { id: 3, name: 'División', symbol: '÷', icon: 'fa-divide', color: '#ffee00', borderClass: 'neon-border-yellow', textGlowClass: 'text-glow-yellow', bgBtnClass: 'bg-yellow-400 hover:bg-yellow-300 text-slate-950 shadow-[0_0_25px_rgba(255,238,0,0.5)]', inputBorder: 'border-yellow-400 focus:border-yellow-200 shadow-[0_0_20px_rgba(255,238,0,0.3)]', textColor: 'text-yellow-400', progressGrad: 'from-yellow-400 to-amber-300 shadow-[0_0_12px_#ffee00]' }
+        ];
+
+        let currentStageIndex = 0;
+        let correctCount = 0;
+        let currentNum1 = 0;
+        let currentNum2 = 0;
+        let currentExpectedAnswer = 0;
+        let soundEnabled = false;
+
+        // Variables de Cronómetro
+        let startTime = null;
+        let elapsedTimeAccumulated = 0; // en milisegundos
+        let timerInterval = null;
+        let isTimerRunning = false;
+        let hasStartedGame = false;
+
+        let audioCtx = null;
+        let isMusicPlaying = false;
+        let musicStep = 0;
+        let musicTimer = null;
+
+        function initAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        const BASS_NOTES = [130.81, 130.81, 155.56, 174.61, 116.54, 116.54, 130.81, 146.83];
+        const LEAD_NOTES = [261.63, 311.13, 392.00, 466.16, 523.25, 466.16, 392.00, 311.13];
+
+        function playTechnoBeat() {
+            if (!soundEnabled || !audioCtx) return;
+            const now = audioCtx.currentTime;
+
+            if (musicStep % 2 === 0) {
+                const kickOsc = audioCtx.createOscillator();
+                const kickGain = audioCtx.createGain();
+                kickOsc.frequency.setValueAtTime(140, now);
+                kickOsc.frequency.exponentialRampToValueAtTime(35, now + 0.08);
+                kickGain.gain.setValueAtTime(0.3, now);
+                kickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+                kickOsc.connect(kickGain);
+                kickGain.connect(audioCtx.destination);
+                kickOsc.start(now);
+                kickOsc.stop(now + 0.12);
+            }
+
+            if (musicStep % 2 === 1) {
+                const bufferSize = audioCtx.sampleRate * 0.03;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = Math.random() * 2 - 1;
+                }
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = audioCtx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.value = 7000;
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(0.06, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(audioCtx.destination);
+                noise.start(now);
+            }
+
+            const bassFreq = BASS_NOTES[Math.floor(musicStep / 2) % BASS_NOTES.length];
+            const bassOsc = audioCtx.createOscillator();
+            const bassFilter = audioCtx.createBiquadFilter();
+            const bassGain = audioCtx.createGain();
+
+            bassOsc.type = 'sawtooth';
+            bassOsc.frequency.setValueAtTime(bassFreq, now);
+
+            bassFilter.type = 'lowpass';
+            bassFilter.frequency.setValueAtTime(600 + (currentStageIndex * 200), now);
+
+            bassGain.gain.setValueAtTime(0.08, now);
+            bassGain.gain.exponentialRampToValueAtTime(0.005, now + 0.11);
+
+            bassOsc.connect(bassFilter);
+            bassFilter.connect(bassGain);
+            bassGain.connect(audioCtx.destination);
+            bassOsc.start(now);
+            bassOsc.stop(now + 0.11);
+
+            if (musicStep % 4 === 0) {
+                const leadFreq = LEAD_NOTES[(musicStep / 4) % LEAD_NOTES.length];
+                const leadOsc = audioCtx.createOscillator();
+                const leadGain = audioCtx.createGain();
+                leadOsc.type = 'square';
+                leadOsc.frequency.setValueAtTime(leadFreq, now);
+
+                leadGain.gain.setValueAtTime(0.04, now);
+                leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+                leadOsc.connect(leadGain);
+                leadGain.connect(audioCtx.destination);
+                leadOsc.start(now);
+                leadOsc.stop(now + 0.15);
+            }
+
+            musicStep = (musicStep + 1) % 16;
+        }
+
+        function startTechnoMusic() {
+            if (isMusicPlaying) return;
+            isMusicPlaying = true;
+            musicStep = 0;
+            musicTimer = setInterval(playTechnoBeat, 115);
+        }
+
+        function stopTechnoMusic() {
+            isMusicPlaying = false;
+            if (musicTimer) clearInterval(musicTimer);
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudioContext();
+            try {
+                const now = audioCtx.currentTime;
+                
+                if (type === 'correct') {
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'square';
+                        osc.frequency.setValueAtTime(freq, now + idx * 0.03);
+                        gain.gain.setValueAtTime(0.12, now + idx * 0.03);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.08);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.03);
+                        osc.stop(now + idx * 0.03 + 0.08);
+                    });
+                } else if (type === 'wrong') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(320, now);
+                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
+                    
+                    gain.gain.setValueAtTime(0.3, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+
+                    const bufferSize = audioCtx.sampleRate * 0.25;
+                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = Math.random() * 2 - 1;
+                    }
+                    const noise = audioCtx.createBufferSource();
+                    noise.buffer = buffer;
+                    const noiseGain = audioCtx.createGain();
+                    noiseGain.gain.setValueAtTime(0.2, now);
+                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                    noise.connect(noiseGain);
+                    noiseGain.connect(audioCtx.destination);
+                    noise.start(now);
+                } else if (type === 'stageWin') {
+                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                    notes.forEach((freq, idx) => {
+                        const osc = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc.type = 'sawtooth';
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0.18, now + idx * 0.07);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.22);
+                        osc.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc.start(now + idx * 0.07);
+                        osc.stop(now + idx * 0.07 + 0.22);
+                    });
+                }
+            } catch (e) {}
+        }
+
+        function toggleSound() {
+            initAudioContext();
+            soundEnabled = !soundEnabled;
+            const soundIcon = document.getElementById('soundIcon');
+            const soundText = document.getElementById('soundText');
+            if (soundEnabled) {
+                soundIcon.className = "fa-solid fa-volume-high text-cyan-400";
+                soundText.innerText = "AUDIO: ON";
+                startTechnoMusic();
+            } else {
+                soundIcon.className = "fa-solid fa-volume-xmark text-slate-500";
+                soundText.innerText = "AUDIO: OFF";
+                stopTechnoMusic();
+            }
+        }
+
+        document.addEventListener('click', function userInteractionAudio() {
+            initAudioContext();
+            document.removeEventListener('click', userInteractionAudio);
+        }, { once: true });
+
+        // Control de Cronómetro
+        function startTimer() {
+            if (!isTimerRunning) {
+                isTimerRunning = true;
+                startTime = Date.now() - elapsedTimeAccumulated;
+                timerInterval = setInterval(updateTimerDisplay, 100);
+            }
+        }
+
+        function pauseTimer() {
+            if (isTimerRunning) {
+                isTimerRunning = false;
+                clearInterval(timerInterval);
+                elapsedTimeAccumulated = Date.now() - startTime;
+            }
+        }
+
+        function resetTimer() {
+            isTimerRunning = false;
+            clearInterval(timerInterval);
+            elapsedTimeAccumulated = 0;
+            startTime = null;
+            hasStartedGame = false;
+            document.getElementById('globalTimerDisplay').innerText = "00:00.0";
+        }
+
+        function updateTimerDisplay() {
+            if (!isTimerRunning) return;
+            const currentTime = Date.now();
+            elapsedTimeAccumulated = currentTime - startTime;
+            document.getElementById('globalTimerDisplay').innerText = formatTime(elapsedTimeAccumulated);
+        }
+
+        function formatTime(ms) {
+            const totalSeconds = Math.floor(ms / 1000);
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const tenths = Math.floor((ms % 1000) / 100);
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${tenths}`;
+        }
+
+        function generateProblem() {
+            const input = document.getElementById('answerInput');
+            input.value = '';
+            input.focus();
+            
+            if (!hasStartedGame) {
+                document.getElementById('hintMessageسمبر').innerText = "ESCRIBE TU RESPUESTA Y PRESIONA ENTER";
+            }
+            document.getElementById('feedbackIcon').className = "hidden";
+
+            const stage = STAGES[currentStageIndex];
+
+            if (stage.id === 0) {
+                currentNum1 = Math.floor(Math.random() * 10);
+                currentNum2 = Math.floor(Math.random() * 10);
+                currentExpectedAnswer = currentNum1 + currentNum2;
+            } else if (stage.id === 1) {
+                currentNum1 = Math.floor(Math.random() * 10);
+                currentNum2 = Math.floor(Math.random() * (currentNum1 + 1));
+                currentExpectedAnswer = currentNum1 - currentNum2;
+            } else if (stage.id === 2) {
+                currentNum1 = Math.floor(Math.random() * 10);
+                currentNum2 = Math.floor(Math.random() * 10);
+                currentExpectedAnswer = currentNum1 * currentNum2;
+            } else if (stage.id === 3) {
+                currentNum2 = Math.floor(Math.random() * 9) + 1;
+                currentExpectedAnswer = Math.floor(Math.random() * 10);
+                currentNum1 = currentNum2 * currentExpectedAnswer;
+            }
+
+            document.getElementById('num1').innerText = currentNum1;
+            document.getElementById('num2').innerText = currentNum2;
+            document.getElementById('operator').innerText = stage.symbol;
+        }
+
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = parseInt(input.value.trim(), 10);
+            const hint = document.getElementById('hintMessage');
+            const mainContainer = document.getElementById('mainContainer');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const stage = STAGES[currentStageIndex];
+
+            if (isNaN(userAnswer)) {
+                hint.innerText = "⚠️ INGRESA UN NÚMERO VÁLIDO";
+                hint.className = "min-h-[24px] mt-4 text-xs md:text-sm font-bold tracking-wider text-yellow-400";
+                return;
+            }
+
+            // Iniciar cronómetro al primer intento del jugador
+            if (!hasStartedGame) {
+                hasStartedGame = true;
+                startTimer();
+            }
+
+            if (userAnswer === currentExpectedAnswer) {
+                playSound('correct');
+                correctCount++;
+
+                feedbackIcon.className = "absolute top-3 right-4 text-4xl text-emerald-400 pulse-pop";
+                feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+
+                hint.innerText = "¡CORRECTO! +1 PUNTO";
+                hint.className = `min-h-[24px] mt-4 text-xs md:text-sm font-bold tracking-wider ${stage.textColor} ${stage.textGlowClass}`;
+
+                triggerNeonParticles(stage.color);
+                updateProgressUI();
+
+                if (correctCount >= TARGET_CORRECT_ANSWERS) {
+                    playSound('stageWin');
+                    
+                    if (currentStageIndex === STAGES.length - 1) {
+                        // Pausar cronómetro al terminar todo el juego
+                        pauseTimer();
+                    }
+
+                    setTimeout(() => {
+                        showStageModal();
+                    }, 400);
+                } else {
+                    setTimeout(() => {
+                        generateProblem();
+                    }, 700);
+                }
+            } else {
+                playSound('wrong');
+                feedbackIcon.className = "absolute top-3 right-4 text-4xl text-rose-500 pulse-pop";
+                feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
+
+                mainContainer.classList.add('shake-screen');
+                setTimeout(() => mainContainer.classList.remove('shake-screen'), 400);
+
+                hint.innerText = "¡ERROR! INTÉNTALO DE NUEVO";
+                hint.className = "min-h-[24px] mt-4 text-xs md:text-sm font-bold tracking-wider text-rose-500";
+                
+                input.value = '';
+                input.focus();
+            }
+        }
+
+        function pressNumpad(val) {
+            const input = document.getElementById('answerInput');
+            if (input.value.length < 3) {
+                input.value += val;
+            }
+        }
+
+        function clearNumpad() {
+            document.getElementById('answerInput').value = '';
+        }
+
+        function updateProgressUI() {
+            const stage = STAGES[currentStageIndex];
+            const percentage = Math.round((correctCount / TARGET_CORRECT_ANSWERS) * 100);
+
+            document.getElementById('progressText').innerText = `${correctCount} / ${TARGET_CORRECT_ANSWERS} (${percentage}%)`;
+            document.getElementById('progressBar').style.width = `${percentage}%`;
+
+            const card = document.getElementById('gameCard');
+            card.className = `w-full bg-gdCard/95 rounded-3xl p-5 md:p-8 ${stage.borderClass} relative shadow-2xl transition-all duration-300`;
+
+            const header = document.getElementById('stageHeader');
+            header.className = `font-audiowide text-sm md:text-lg ${stage.textColor} flex items-center gap-2 ${stage.textGlowClass}`;
+            header.innerHTML = `<i class="fa-solid fa-play text-xs"></i> ETAPA ${currentStageIndex + 1}: ${stage.name.toUpperCase()} (1 CIFRA)`;
+
+            const operator = document.getElementById('operator');
+            operator.className = `${stage.textColor} ${stage.textGlowClass} transform scale-100 sm:scale-110 px-0.5 flex-shrink-0`;
+
+            const progressBar = document.getElementById('progressBar');
+            progressBar.className = `h-full bg-gradient-to-r ${stage.progressGrad} rounded-full transition-all duration-300`;
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.className = `gd-button w-full md:w-2/3 py-4 ${stage.bgBtnClass} font-audiowide text-xl md:text-2xl rounded-2xl font-bold flex items-center justify-center gap-3 border-2 border-white`;
+
+            const input = document.getElementById('answerInput');
+            input.className = `w-16 sm:w-24 md:w-36 h-12 sm:h-16 md:h-24 text-center text-2xl sm:text-5xl md:text-7xl font-bold font-audiowide text-white bg-slate-900 border-2 sm:border-4 ${stage.inputBorder} rounded-lg sm:rounded-2xl transition flex-shrink-0`;
+
+            document.getElementById(`badgeStatus-${currentStageIndex}`).innerText = `${correctCount} / ${TARGET_CORRECT_ANSWERS}`;
+        }
+
+        function updateBadgesUI() {
+            STAGES.forEach((stage, idx) => {
+                const badge = document.getElementById(`badge-${idx}`);
+                const status = document.getElementById(`badgeStatus-${idx}`);
+
+                if (idx < currentStageIndex) {
+                    badge.className = "bg-gdCard rounded-xl p-2 md:p-3 text-center border-2 border-emerald-500/80 shadow-[0_0_10px_rgba(0,255,102,0.3)] transition-all";
+                    status.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> LISTO</span>`;
+                } else if (idx === currentStageIndex) {
+                    badge.className = `bg-gdCard rounded-xl p-2 md:p-3 text-center ${stage.borderClass} transition-all scale-105`;
+                    status.innerText = `${correctCount} / ${TARGET_CORRECT_ANSWERS}`;
+                } else {
+                    badge.className = "bg-gdCard/50 opacity-40 rounded-xl p-2 md:p-3 text-center border-2 border-slate-800 transition-all";
+                    status.innerText = "BLOQUEADO";
+                }
+            });
+        }
+
+        function showStageModal() {
+            if (currentStageIndex < STAGES.length - 1) {
+                const modal = document.getElementById('stageModal');
+                const detail = document.getElementById('stageModalDetail');
+                const nextStageName = STAGES[currentStageIndex + 1].name.toUpperCase();
+                detail.innerHTML = `Has completado la etapa <strong class="text-cyan-400">${STAGES[currentStageIndex].name}</strong>.<br>Tiempo acumulado: <strong class="text-yellow-400">${formatTime(elapsedTimeAccumulated)}</strong>`;
+                modal.classList.remove('hidden');
+            } else {
+                triggerVictoryConfetti();
+                document.getElementById('finalTimeResult').innerText = formatTime(elapsedTimeAccumulated);
+                document.getElementById('saveScoreSection').style.display = 'block';
+                document.getElementById('playerNameInput').value = '';
+                renderLeaderboard();
+                document.getElementById('victoryModal').classList.remove('hidden');
+            }
+        }
+
+        function nextStage() {
+            document.getElementById('stageModal').classList.add('hidden');
+            currentStageIndex++;
+            correctCount = 0;
+            updateProgressUI();
+            updateBadgesUI();
+            generateProblem();
+        }
+
+        function resetGame() {
+            document.getElementById('victoryModal').classList.add('hidden');
+            document.getElementById('stageModal').classList.add('hidden');
+            resetTimer();
+            currentStageIndex = 0;
+            correctCount = 0;
+            updateProgressUI();
+            updateBadgesUI();
+            generateProblem();
+        }
+
+        function confirmReset() {
+            if (confirm("¿Reiniciar el juego y perder el tiempo actual?")) {
+                resetGame();
+            }
+        }
+
+        // Sistema de Guardado en Top 10 (LocalStorage)
+        function savePlayerScore() {
+            const nameInput = document.getElementById('playerNameInput');
+            const playerName = nameInput.value.trim().toUpperCase() || "JUGADOR";
+            const scoreTimeMs = elapsedTimeAccumulated;
+
+            let leaderboard = JSON.parse(localStorage.getItem('mathDashLeaderboard')) || [];
+            
+            leaderboard.push({ name: playerName, timeMs: scoreTimeMs });
+            // Ordenar de menor a mayor tiempo (el menor tiempo gana)
+            leaderboard.sort((a, b) => a.timeMs - b.timeMs);
+            
+            // Mantener solo los 10 mejores
+            if (leaderboard.length > 10) {
+                leaderboard = leaderboard.slice(0, 10);
+            }
+
+            localStorage.setItem('mathDashLeaderboard', JSON.stringify(leaderboard));
+            
+            document.getElementById('saveScoreSection').style.display = 'none';
+            renderLeaderboard();
+        }
+
+        function renderLeaderboard() {
+            const tbody = document.getElementById('leaderboardTableBody');
+            tbody.innerHTML = '';
+            
+            let leaderboard = JSON.parse(localStorage.getItem('mathDashLeaderboard')) || [];
+
+            if (leaderboard.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Aún no hay récords guardados. ¡Sé el primero!</td></tr>`;
+                return;
+            }
+
+            leaderboard.forEach((entry, index) => {
+                let badgeColor = "text-slate-400";
+                if (index === 0) badgeColor = "text-yellow-400 font-bold";
+                else if (index === 1) badgeColor = "text-slate-300 font-bold";
+                else if (index === 2) badgeColor = "text-amber-600 font-bold";
+
+                const row = document.createElement('tr');
+                row.className = "border-b border-slate-900 hover:bg-slate-900/50";
+                row.innerHTML = `
+                    <td class="p-2 text-center ${badgeColor}">#${index + 1}</td>
+                    <td class="p-2 text-white font-bold truncate max-w-[150px]">${entry.name}</td>
+                    <td class="p-2 text-right font-audiowide text-emerald-400">${formatTime(entry.timeMs)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function triggerNeonParticles(hexColor) {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 40,
+                    spread: 60,
+                    origin: { y: 0.65 },
+                    colors: [hexColor, '#ffffff', '#00f0ff']
+                });
+            }
+        }
+
+        function triggerVictoryConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.5 },
+                    colors: ['#00ff66', '#00f0ff', '#ff007f', '#ffee00']
+                });
+            }
+        }
+
+        window.onload = function() {
+            updateProgressUI();
+            updateBadgesUI();
+            generateProblem();
+        }
+    </script>
+</body>
+</html>
