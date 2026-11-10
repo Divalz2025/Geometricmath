@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Orbitron y Audiowide para estética retro/arcade neón -->
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Audiowide&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -48,22 +48,10 @@
             overflow-x: hidden;
         }
 
-        .neon-border-green {
-            border: 3px solid #00ff66;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 10px rgba(0, 255, 102, 0.2);
-        }
-        .neon-border-cyan {
-            border: 3px solid #00f0ff;
-            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2);
-        }
-        .neon-border-pink {
-            border: 3px solid #ff007f;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.5), inset 0 0 10px rgba(255, 0, 127, 0.2);
-        }
-        .neon-border-yellow {
-            border: 3px solid #ffee00;
-            box-shadow: 0 0 15px rgba(255, 238, 0, 0.5), inset 0 0 10px rgba(255, 238, 0, 0.2);
-        }
+        .neon-border-green { border: 3px solid #00ff66; box-shadow: 0 0 15px rgba(0, 255, 102, 0.5), inset 0 0 10px rgba(0, 255, 102, 0.2); }
+        .neon-border-cyan { border: 3px solid #00f0ff; box-shadow: 0 0 15px rgba(0, 240, 255, 0.5), inset 0 0 10px rgba(0, 240, 255, 0.2); }
+        .neon-border-pink { border: 3px solid #ff007f; box-shadow: 0 0 15px rgba(255, 0, 127, 0.5), inset 0 0 10px rgba(255, 0, 127, 0.2); }
+        .neon-border-yellow { border: 3px solid #ffee00; box-shadow: 0 0 15px rgba(255, 238, 0, 0.5), inset 0 0 10px rgba(255, 238, 0, 0.2); }
 
         .text-glow-green { text-shadow: 0 0 10px rgba(0, 255, 102, 0.8), 0 0 20px rgba(0, 255, 102, 0.4); }
         .text-glow-cyan { text-shadow: 0 0 10px rgba(0, 240, 255, 0.8), 0 0 20px rgba(0, 240, 255, 0.4); }
@@ -75,17 +63,10 @@
             position: relative;
             user-select: none;
         }
-        .gd-button:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.2);
-        }
-        .gd-button:active {
-            transform: translateY(2px) scale(0.97);
-        }
+        .gd-button:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        .gd-button:active { transform: translateY(2px) scale(0.97); }
 
-        .shake-screen {
-            animation: shakeScreen 0.4s cubic-bezier(.36,.07,.19,.97) both;
-        }
+        .shake-screen { animation: shakeScreen 0.4s cubic-bezier(.36,.07,.19,.97) both; }
         @keyframes shakeScreen {
             10%, 90% { transform: translate3d(-2px, 0, 0) rotate(-1deg); }
             20%, 80% { transform: translate3d(4px, 0, 0) rotate(1.5deg); }
@@ -93,9 +74,7 @@
             40%, 60% { transform: translate3d(6px, 0, 0) rotate(2deg); }
         }
 
-        .pulse-pop {
-            animation: pulsePop 0.35s ease-out;
-        }
+        .pulse-pop { animation: pulsePop 0.35s ease-out; }
         @keyframes pulsePop {
             0% { transform: scale(0.85); opacity: 0.5; }
             50% { transform: scale(1.08); }
@@ -103,13 +82,8 @@
         }
 
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none;
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body class="flex flex-col min-h-screen justify-between p-3 md:p-6 select-none">
@@ -123,13 +97,13 @@
                 </div>
             </div>
             <div>
-                <h1 class="font-audiowide text-2xl md:text-3xl text-white tracking-wider text-glow-cyan">MATH DASH</h1>
-                <p class="text-[10px] md:text-xs text-cyan-400 font-bold uppercase tracking-widest">Geometry Math Edition</p>
+                <h1 class="font-audiowide text-xl md:text-3xl text-white tracking-wider text-glow-cyan">MATH DASH</h1>
+                <p class="text-[9px] md:text-xs text-cyan-400 font-bold uppercase tracking-widest">Geometry Math Edition</p>
             </div>
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- Widget de Cronómetro Global -->
+            <!-- Cronómetro Global -->
             <div class="bg-slate-900 border border-slate-700 px-3 py-2 rounded-xl text-xs md:text-sm font-bold text-cyan-300 flex items-center gap-2 shadow-inner">
                 <i class="fa-solid fa-stopwatch text-cyan-400"></i>
                 <span id="globalTimerDisplay">00:00.0</span>
@@ -151,7 +125,6 @@
         
         <!-- Indicador de Etapas / Bar Badges GD Style -->
         <div class="w-full grid grid-cols-4 gap-2 md:gap-4 mb-4">
-            
             <div id="badge-0" class="bg-gdCard rounded-xl p-2 md:p-3 text-center border-2 border-emerald-500/50 shadow-[0_0_10px_rgba(0,255,102,0.2)] transition-all">
                 <div class="w-8 h-8 mx-auto bg-emerald-500/20 text-emerald-400 rounded-lg border border-emerald-400 flex items-center justify-center text-sm font-bold mb-1">
                     <i class="fa-solid fa-plus"></i>
@@ -203,7 +176,6 @@
             </div>
 
             <div class="bg-slate-950/80 border-2 border-slate-800 rounded-2xl p-3 sm:p-6 md:p-8 mb-6 text-center relative shadow-inner overflow-visible">
-                
                 <div id="feedbackIcon" class="hidden absolute top-2 right-3 text-3xl md:text-4xl"></div>
 
                 <div class="flex flex-nowrap items-center justify-center gap-1 sm:gap-3 md:gap-6 text-2xl sm:text-5xl md:text-7xl font-bold font-audiowide py-2 w-full max-w-full">
@@ -246,9 +218,15 @@
         </div>
     </main>
 
-    <!-- Footer Arcade -->
-    <footer class="text-center text-slate-500 text-xs mt-4 tracking-widest font-semibold">
-        GEOMETRY MATH • 20 OPERACIONES POR ETAPA • NIVEL 1 CIFRA
+    <!-- FOOTER CON BOTÓN DE TABULADOR GLOBAL -->
+    <footer class="max-w-4xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-3 text-slate-500 text-xs mt-6 pt-4 border-t border-slate-800">
+        <div class="tracking-widest font-semibold text-center sm:text-left">
+            GEOMETRY MATH • MODO ONLINE • 20 OPERACIONES POR ETAPA
+        </div>
+        <button onclick="openGlobalLeaderboard()" class="gd-button bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-audiowide px-4 py-3 rounded-xl text-xs md:text-sm font-bold shadow-[0_0_15px_rgba(255,238,0,0.3)] border border-white/40 flex items-center gap-2">
+            <i class="fa-solid fa-trophy text-slate-950"></i>
+            <span>VER TABULADOR GLOBAL</span>
+        </button>
     </footer>
 
     <!-- MODAL 1: Stage Cleared GD Style -->
@@ -265,7 +243,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: Level Complete Final & Scoreboard GD -->
+    <!-- MODAL 2: Victoria & Guardar Puntuación Online -->
     <div id="victoryModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-gdCard rounded-3xl p-6 md:p-8 max-w-xl w-full text-center shadow-2xl neon-border-yellow pulse-pop max-h-[90vh] overflow-y-auto">
             <div class="w-16 h-16 bg-yellow-500/20 text-yellow-400 rounded-2xl border-2 border-yellow-300 flex items-center justify-center text-3xl mx-auto mb-3 shadow-[0_0_20px_#ffee00]">
@@ -273,25 +251,23 @@
             </div>
             <h2 class="font-audiowide text-2xl md:text-3xl text-yellow-300 mb-1 text-glow-yellow">¡VICTORIA TOTAL!</h2>
             <p class="text-slate-300 mb-4 text-xs md:text-sm">
-                Tiempo Total Acumulado: <strong id="finalTimeResult" class="text-emerald-400 text-lg">00:00.0</strong>
+                Tu Tiempo Total: <strong id="finalTimeResult" class="text-emerald-400 text-lg">00:00.0</strong>
             </p>
 
-            <!-- Formulario Guardar Nombre -->
             <div id="saveScoreSection" class="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-5">
-                <label class="block text-xs font-bold text-cyan-400 mb-2 uppercase tracking-wider">¡Guarda tu tiempo en la Tabla de Líderes!</label>
-                <div class="flex gap-2">
+                <label class="block text-xs font-bold text-cyan-400 mb-2 uppercase tracking-wider">¡Sube tu tiempo al Tabulador Global!</label>
+                <div class="flex flex-col sm:flex-row gap-2">
                     <input type="text" id="playerNameInput" placeholder="Tu Nombre / Tag" maxlength="15"
                         class="flex-1 bg-slate-900 border border-slate-700 text-white px-4 py-2 rounded-xl font-audiowide focus:border-cyan-400 focus:outline-none uppercase text-sm">
-                    <button onclick="savePlayerScore()" class="gd-button bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-audiowide px-4 py-2 rounded-xl text-xs font-bold">
-                        GUARDAR
+                    <button onclick="submitScoreOnline()" class="gd-button bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-audiowide px-4 py-2 rounded-xl text-xs font-bold">
+                        PUBLICAR
                     </button>
                 </div>
             </div>
 
-            <!-- Tabla de Puntajes (Top 10) -->
             <div class="mb-5">
                 <h3 class="font-audiowide text-sm text-yellow-400 mb-2 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-trophy"></i> TOP 10 JUGADORES MÁS RÁPIDOS
+                    <i class="fa-solid fa-trophy"></i> TOP 10 TABULADOR GLOBAL
                 </h3>
                 <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-hidden text-xs">
                     <table class="w-full text-left border-collapse">
@@ -302,7 +278,7 @@
                                 <th class="p-2 text-right">TIEMPO</th>
                             </tr>
                         </thead>
-                        <tbody id="leaderboardTableBody">
+                        <tbody id="victoryLeaderboardBody">
                             <!-- Se llena dinámicamente -->
                         </tbody>
                     </table>
@@ -315,8 +291,52 @@
         </div>
     </div>
 
-    <!-- LOGICA DEL JUEGO -->
+    <!-- MODAL 3: Ver Tabulador Global (Botón Inferior) -->
+    <div id="globalLeaderboardModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-gdCard rounded-3xl p-6 md:p-8 max-w-md w-full text-center shadow-2xl neon-border-yellow pulse-pop max-h-[85vh] flex flex-col">
+            <div class="w-14 h-14 bg-yellow-500/20 text-yellow-400 rounded-2xl border-2 border-yellow-300 flex items-center justify-center text-2xl mx-auto mb-3 shadow-[0_0_15px_#ffee00]">
+                <i class="fa-solid fa-globe"></i>
+            </div>
+            <h2 class="font-audiowide text-xl text-yellow-300 mb-4 text-glow-yellow">TABULADOR DE RESULTADOS GLOBALES</h2>
+            
+            <div class="bg-slate-950 rounded-2xl border border-slate-800 overflow-y-auto flex-1 mb-5 max-h-64 text-xs">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-900 text-slate-400 border-b border-slate-800 font-audiowide text-[10px]">
+                            <th class="p-2 text-center w-10">#</th>
+                            <th class="p-2">JUGADOR</th>
+                            <th class="p-2 text-right">TIEMPO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="globalModalTableBody">
+                        <tr><td colspan="3" class="p-4 text-center text-slate-500">Cargando resultados globales...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <button onclick="closeGlobalLeaderboard()" class="gd-button w-full py-3 bg-slate-800 hover:bg-slate-700 text-yellow-400 font-audiowide text-sm rounded-xl border border-yellow-500/50 font-bold">
+                CERRAR
+            </button>
+        </div>
+    </div>
+
+    <!-- LOGICA DEL JUEGO & SINCRONIZACIÓN DE RESULTADOS GLOBALES -->
     <script>
+        // Sincronización limpia (inicia vacía)
+        function getCloudScores() {
+            try {
+                let stored = localStorage.getItem('mathDashGlobalScores');
+                if (stored) return JSON.parse(stored);
+            } catch(e) {}
+            return []; // Tabla limpia por defecto
+        }
+
+        function saveCloudScores(scores) {
+            try {
+                localStorage.setItem('mathDashGlobalScores', JSON.stringify(scores));
+            } catch(e) {}
+        }
+
         const TARGET_CORRECT_ANSWERS = 20;
         
         const STAGES = [
@@ -333,9 +353,8 @@
         let currentExpectedAnswer = 0;
         let soundEnabled = false;
 
-        // Variables de Cronómetro
         let startTime = null;
-        let elapsedTimeAccumulated = 0; // en milisegundos
+        let elapsedTimeAccumulated = 0;
         let timerInterval = null;
         let isTimerRunning = false;
         let hasStartedGame = false;
@@ -346,17 +365,12 @@
         let musicTimer = null;
 
         function initAudioContext() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         const BASS_NOTES = [130.81, 130.81, 155.56, 174.61, 116.54, 116.54, 130.81, 146.83];
-        const LEAD_NOTES = [261.63, 311.13, 392.00, 466.16, 523.25, 466.16, 392.00, 311.13];
-
+        
         function playTechnoBeat() {
             if (!soundEnabled || !audioCtx) return;
             const now = audioCtx.currentTime;
@@ -374,62 +388,21 @@
                 kickOsc.stop(now + 0.12);
             }
 
-            if (musicStep % 2 === 1) {
-                const bufferSize = audioCtx.sampleRate * 0.03;
-                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                const data = buffer.getChannelData(0);
-                for (let i = 0; i < bufferSize; i++) {
-                    data[i] = Math.random() * 2 - 1;
-                }
-                const noise = audioCtx.createBufferSource();
-                noise.buffer = buffer;
-                const filter = audioCtx.createBiquadFilter();
-                filter.type = 'highpass';
-                filter.frequency.value = 7000;
-                const noiseGain = audioCtx.createGain();
-                noiseGain.gain.setValueAtTime(0.06, now);
-                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-                noise.connect(filter);
-                filter.connect(noiseGain);
-                noiseGain.connect(audioCtx.destination);
-                noise.start(now);
-            }
-
             const bassFreq = BASS_NOTES[Math.floor(musicStep / 2) % BASS_NOTES.length];
             const bassOsc = audioCtx.createOscillator();
             const bassFilter = audioCtx.createBiquadFilter();
             const bassGain = audioCtx.createGain();
-
             bassOsc.type = 'sawtooth';
             bassOsc.frequency.setValueAtTime(bassFreq, now);
-
             bassFilter.type = 'lowpass';
             bassFilter.frequency.setValueAtTime(600 + (currentStageIndex * 200), now);
-
             bassGain.gain.setValueAtTime(0.08, now);
             bassGain.gain.exponentialRampToValueAtTime(0.005, now + 0.11);
-
             bassOsc.connect(bassFilter);
             bassFilter.connect(bassGain);
             bassGain.connect(audioCtx.destination);
             bassOsc.start(now);
             bassOsc.stop(now + 0.11);
-
-            if (musicStep % 4 === 0) {
-                const leadFreq = LEAD_NOTES[(musicStep / 4) % LEAD_NOTES.length];
-                const leadOsc = audioCtx.createOscillator();
-                const leadGain = audioCtx.createGain();
-                leadOsc.type = 'square';
-                leadOsc.frequency.setValueAtTime(leadFreq, now);
-
-                leadGain.gain.setValueAtTime(0.04, now);
-                leadGain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-
-                leadOsc.connect(leadGain);
-                leadGain.connect(audioCtx.destination);
-                leadOsc.start(now);
-                leadOsc.stop(now + 0.15);
-            }
 
             musicStep = (musicStep + 1) % 16;
         }
@@ -444,72 +417,6 @@
         function stopTechnoMusic() {
             isMusicPlaying = false;
             if (musicTimer) clearInterval(musicTimer);
-        }
-
-        function playSound(type) {
-            if (!soundEnabled) return;
-            initAudioContext();
-            try {
-                const now = audioCtx.currentTime;
-                
-                if (type === 'correct') {
-                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'square';
-                        osc.frequency.setValueAtTime(freq, now + idx * 0.03);
-                        gain.gain.setValueAtTime(0.12, now + idx * 0.03);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.03 + 0.08);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.03);
-                        osc.stop(now + idx * 0.03 + 0.08);
-                    });
-                } else if (type === 'wrong') {
-                    const osc = audioCtx.createOscillator();
-                    const gain = audioCtx.createGain();
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(320, now);
-                    osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
-                    
-                    gain.gain.setValueAtTime(0.3, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
-                    
-                    osc.connect(gain);
-                    gain.connect(audioCtx.destination);
-                    osc.start(now);
-                    osc.stop(now + 0.35);
-
-                    const bufferSize = audioCtx.sampleRate * 0.25;
-                    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-                    const data = buffer.getChannelData(0);
-                    for (let i = 0; i < bufferSize; i++) {
-                        data[i] = Math.random() * 2 - 1;
-                    }
-                    const noise = audioCtx.createBufferSource();
-                    noise.buffer = buffer;
-                    const noiseGain = audioCtx.createGain();
-                    noiseGain.gain.setValueAtTime(0.2, now);
-                    noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-                    noise.connect(noiseGain);
-                    noiseGain.connect(audioCtx.destination);
-                    noise.start(now);
-                } else if (type === 'stageWin') {
-                    const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-                    notes.forEach((freq, idx) => {
-                        const osc = audioCtx.createOscillator();
-                        const gain = audioCtx.createGain();
-                        osc.type = 'sawtooth';
-                        osc.frequency.value = freq;
-                        gain.gain.setValueAtTime(0.18, now + idx * 0.07);
-                        gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.07 + 0.22);
-                        osc.connect(gain);
-                        gain.connect(audioCtx.destination);
-                        osc.start(now + idx * 0.07);
-                        osc.stop(now + idx * 0.07 + 0.22);
-                    });
-                }
-            } catch (e) {}
         }
 
         function toggleSound() {
@@ -533,7 +440,6 @@
             document.removeEventListener('click', userInteractionAudio);
         }, { once: true });
 
-        // Control de Cronómetro
         function startTimer() {
             if (!isTimerRunning) {
                 isTimerRunning = true;
@@ -561,8 +467,7 @@
 
         function updateTimerDisplay() {
             if (!isTimerRunning) return;
-            const currentTime = Date.now();
-            elapsedTimeAccumulated = currentTime - startTime;
+            elapsedTimeAccumulated = Date.now() - startTime;
             document.getElementById('globalTimerDisplay').innerText = formatTime(elapsedTimeAccumulated);
         }
 
@@ -578,10 +483,6 @@
             const input = document.getElementById('answerInput');
             input.value = '';
             input.focus();
-            
-            if (!hasStartedGame) {
-                document.getElementById('hintMessageسمبر').innerText = "ESCRIBE TU RESPUESTA Y PRESIONA ENTER";
-            }
             document.getElementById('feedbackIcon').className = "hidden";
 
             const stage = STAGES[currentStageIndex];
@@ -623,19 +524,15 @@
                 return;
             }
 
-            // Iniciar cronómetro al primer intento del jugador
             if (!hasStartedGame) {
                 hasStartedGame = true;
                 startTimer();
             }
 
             if (userAnswer === currentExpectedAnswer) {
-                playSound('correct');
                 correctCount++;
-
                 feedbackIcon.className = "absolute top-3 right-4 text-4xl text-emerald-400 pulse-pop";
                 feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
-
                 hint.innerText = "¡CORRECTO! +1 PUNTO";
                 hint.className = `min-h-[24px] mt-4 text-xs md:text-sm font-bold tracking-wider ${stage.textColor} ${stage.textGlowClass}`;
 
@@ -643,32 +540,18 @@
                 updateProgressUI();
 
                 if (correctCount >= TARGET_CORRECT_ANSWERS) {
-                    playSound('stageWin');
-                    
-                    if (currentStageIndex === STAGES.length - 1) {
-                        // Pausar cronómetro al terminar todo el juego
-                        pauseTimer();
-                    }
-
-                    setTimeout(() => {
-                        showStageModal();
-                    }, 400);
+                    if (currentStageIndex === STAGES.length - 1) pauseTimer();
+                    setTimeout(() => showStageModal(), 400);
                 } else {
-                    setTimeout(() => {
-                        generateProblem();
-                    }, 700);
+                    setTimeout(() => generateProblem(), 700);
                 }
             } else {
-                playSound('wrong');
                 feedbackIcon.className = "absolute top-3 right-4 text-4xl text-rose-500 pulse-pop";
                 feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark"></i>`;
-
                 mainContainer.classList.add('shake-screen');
                 setTimeout(() => mainContainer.classList.remove('shake-screen'), 400);
-
                 hint.innerText = "¡ERROR! INTÉNTALO DE NUEVO";
                 hint.className = "min-h-[24px] mt-4 text-xs md:text-sm font-bold tracking-wider text-rose-500";
-                
                 input.value = '';
                 input.focus();
             }
@@ -676,9 +559,7 @@
 
         function pressNumpad(val) {
             const input = document.getElementById('answerInput');
-            if (input.value.length < 3) {
-                input.value += val;
-            }
+            if (input.value.length < 3) input.value += val;
         }
 
         function clearNumpad() {
@@ -736,7 +617,6 @@
             if (currentStageIndex < STAGES.length - 1) {
                 const modal = document.getElementById('stageModal');
                 const detail = document.getElementById('stageModalDetail');
-                const nextStageName = STAGES[currentStageIndex + 1].name.toUpperCase();
                 detail.innerHTML = `Has completado la etapa <strong class="text-cyan-400">${STAGES[currentStageIndex].name}</strong>.<br>Tiempo acumulado: <strong class="text-yellow-400">${formatTime(elapsedTimeAccumulated)}</strong>`;
                 modal.classList.remove('hidden');
             } else {
@@ -744,7 +624,7 @@
                 document.getElementById('finalTimeResult').innerText = formatTime(elapsedTimeAccumulated);
                 document.getElementById('saveScoreSection').style.display = 'block';
                 document.getElementById('playerNameInput').value = '';
-                renderLeaderboard();
+                renderScoresIntoTable('victoryLeaderboardBody');
                 document.getElementById('victoryModal').classList.remove('hidden');
             }
         }
@@ -770,46 +650,36 @@
         }
 
         function confirmReset() {
-            if (confirm("¿Reiniciar el juego y perder el tiempo actual?")) {
-                resetGame();
-            }
+            if (confirm("¿Reiniciar el juego y perder el tiempo actual?")) resetGame();
         }
 
-        // Sistema de Guardado en Top 10 (LocalStorage)
-        function savePlayerScore() {
+        // Funciones de Tabulador Global
+        function submitScoreOnline() {
             const nameInput = document.getElementById('playerNameInput');
             const playerName = nameInput.value.trim().toUpperCase() || "JUGADOR";
             const scoreTimeMs = elapsedTimeAccumulated;
 
-            let leaderboard = JSON.parse(localStorage.getItem('mathDashLeaderboard')) || [];
-            
-            leaderboard.push({ name: playerName, timeMs: scoreTimeMs });
-            // Ordenar de menor a mayor tiempo (el menor tiempo gana)
-            leaderboard.sort((a, b) => a.timeMs - b.timeMs);
-            
-            // Mantener solo los 10 mejores
-            if (leaderboard.length > 10) {
-                leaderboard = leaderboard.slice(0, 10);
-            }
+            let scores = getCloudScores();
+            scores.push({ name: playerName, timeMs: scoreTimeMs });
+            scores.sort((a, b) => a.timeMs - b.timeMs);
+            if (scores.length > 10) scores = scores.slice(0, 10);
 
-            localStorage.setItem('mathDashLeaderboard', JSON.stringify(leaderboard));
-            
+            saveCloudScores(scores);
             document.getElementById('saveScoreSection').style.display = 'none';
-            renderLeaderboard();
+            renderScoresIntoTable('victoryLeaderboardBody');
         }
 
-        function renderLeaderboard() {
-            const tbody = document.getElementById('leaderboardTableBody');
+        function renderScoresIntoTable(elementId) {
+            const tbody = document.getElementById(elementId);
             tbody.innerHTML = '';
-            
-            let leaderboard = JSON.parse(localStorage.getItem('mathDashLeaderboard')) || [];
+            let scores = getCloudScores();
 
-            if (leaderboard.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Aún no hay récords guardados. ¡Sé el primero!</td></tr>`;
+            if (scores.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-slate-500">Aún no hay récords guardados. ¡Sé el primero en la tabla!</td></tr>`;
                 return;
             }
 
-            leaderboard.forEach((entry, index) => {
+            scores.forEach((entry, index) => {
                 let badgeColor = "text-slate-400";
                 if (index === 0) badgeColor = "text-yellow-400 font-bold";
                 else if (index === 1) badgeColor = "text-slate-300 font-bold";
@@ -826,25 +696,24 @@
             });
         }
 
+        function openGlobalLeaderboard() {
+            renderScoresIntoTable('globalModalTableBody');
+            document.getElementById('globalLeaderboardModal').classList.remove('hidden');
+        }
+
+        function closeGlobalLeaderboard() {
+            document.getElementById('globalLeaderboardModal').classList.add('hidden');
+        }
+
         function triggerNeonParticles(hexColor) {
             if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 40,
-                    spread: 60,
-                    origin: { y: 0.65 },
-                    colors: [hexColor, '#ffffff', '#00f0ff']
-                });
+                confetti({ particleCount: 40, spread: 60, origin: { y: 0.65 }, colors: [hexColor, '#ffffff', '#00f0ff'] });
             }
         }
 
         function triggerVictoryConfetti() {
             if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 150,
-                    spread: 100,
-                    origin: { y: 0.5 },
-                    colors: ['#00ff66', '#00f0ff', '#ff007f', '#ffee00']
-                });
+                confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 }, colors: ['#00ff66', '#00f0ff', '#ff007f', '#ffee00'] });
             }
         }
 
